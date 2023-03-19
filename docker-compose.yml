@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  nuxt:
+    container_name: nuxt
+    build:
+      context: .
+      dockerfile: ./docker/nuxt/Dockerfile
+    volumes:
+      - ./front:/app:cached
+      - nuxt_node_modules:/app/node_modules
+      - ./front/pages:/app/pages
+
+    ports:
+      - "3001:3000"
+      # - "80:3000"
+      - "24678:24678"
+    tty: true
+    environment:
+      # - HOST=0.0.0.0
+      # - port=80
+      - CHOKIDAR_USEPOLLING=true
+    command: sh -c "yarn && yarn dev"
+    networks:
+      - myapp
+    
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
+    volumes:  
+      - ./api:/app:cached
+    ports:
+      - "5001:5000"
+    tty: true
+    networks:
+      - myapp
+  
+volumes:
+  nuxt_node_modules:
+
+networks:
+  myapp:
